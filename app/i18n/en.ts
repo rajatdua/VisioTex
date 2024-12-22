@@ -7,8 +7,8 @@ const en = {
   },
   welcomeScreen: {
     postscript:
-      "psst  — This probably isn't what your app looks like. (Unless your designer handed you these screens, and in that case, ship it!)",
-    readyForLaunch: "Your app, almost ready for launch!",
+      "psst  — I hope you like this application, it took some time.",
+    readyForLaunch: "Well, hello there!",
     exciting: "(ohh, this is exciting!)",
     letsGo: "Let's go!",
   },
@@ -41,11 +41,13 @@ const en = {
     tapToSignIn: "Tap to sign in!",
     hint: "Hint: you can use any email address and your favorite password :)",
   },
-  demoNavigator: {
+  navigator: {
     componentsTab: "Components",
     debugTab: "Debug",
     communityTab: "Community",
     podcastListTab: "Podcast",
+    instructionTab: "Instructions",
+    scanTab: "Scan"
   },
   demoCommunityScreen: {
     title: "Connect with the community",
@@ -119,6 +121,17 @@ const en = {
         "No favorites have been added yet. Tap the heart on an episode to add it to your favorites!",
     },
   },
+  instructionScreen: {
+    title: "Instructions",
+    tagLine: "Perceive real-world contextual information through visualization with us!",
+    description: "How to proceed?",
+    theFirstStep: "Click the \"Scan\" tab and proceed with scanning a shelf or a whole rack.",
+    proceedToScan: "Click to Proceed",
+    whatToExpect: "What to Expect?",
+    expectation: "You will be given an option to scan the book shelf in front of you. After taking the picture, you would require to crop the image to only focus on the books itself. Lastly, you will get some straight-forward click actions to proceed with the reports.",
+    theLatestUpdate: "The latest in VisioTex",
+    theLatestUpdateDescription: "The outliers are now visualized in the same image that was fed as an input by you!"
+  }
 }
 
 export default en

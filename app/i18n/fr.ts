@@ -44,7 +44,7 @@ const fr: Translations = {
     tapToSignIn: "Appuyez pour vous connecter !",
     hint: "Astuce : vous pouvez utiliser n'importe quelle adresse e-mail et votre mot de passe préféré :)",
   },
-  demoNavigator: {
+  navigator: {
     componentsTab: "Composants",
     debugTab: "Débogage",
     communityTab: "Communauté",

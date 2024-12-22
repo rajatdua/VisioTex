@@ -108,6 +108,13 @@ export const iconRegistry = {
   slack: require("../../assets/icons/demo/slack.png"),
   view: require("../../assets/icons/view.png"),
   x: require("../../assets/icons/x.png"),
+  information: require("../../assets/icons/information.png"),
+  scan: require("../../assets/icons/scan.png"),
+  flip: require("../../assets/icons/flip.png"),
+  imageUpload: require("../../assets/icons/imageUpload.png"),
+  circle: require("../../assets/icons/circle.png"),
+  delete: require("../../assets/icons/delete.png"),
+  moreImage: require("../../assets/icons/moreImage.png"),
 }
 
 const $imageStyleBase: ImageStyle = {

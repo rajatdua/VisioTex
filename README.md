@@ -139,6 +139,15 @@ const MyComponent = () => {
 };
 ```
 
+### Icon Attribution
+- <a href="https://www.flaticon.com/free-icons/instruction" title="instruction icons">Instruction icons created by Rahul Kaklotar - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/qr-code" title="qr-code icons">Qr-code icons created by Saepul Nahwan - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/rotate-camera" title="rotate camera icons">Rotate camera icons created by Saepul Nahwan - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/picture" title="picture icons">Picture icons created by SeyfDesigner - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/circle" title="circle icons">Circle icons created by Freepik - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/picture" title="picture icons">Picture icons created by Pixel perfect - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/delete" title="delete icons">Delete icons created by feen - Flaticon</a>
+
 ### ./ignite directory
 
 The `ignite` directory stores all things Ignite, including CLI and boilerplate items. Here you will find templates you can customize to help you get started with React Native.
