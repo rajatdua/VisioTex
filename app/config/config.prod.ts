@@ -6,5 +6,6 @@
  * https://reactnative.dev/docs/security#storing-sensitive-info
  */
 export default {
-  API_URL: "CHANGEME",
+  API_URL: "http://localhost/api/v1",
+  SHOULD_MOCK: false,
 }

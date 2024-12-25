@@ -9,8 +9,7 @@ import { ApiResponse, ApisauceInstance, create } from "apisauce"
 import Config from "../../config"
 import { GeneralApiProblem, getGeneralApiProblem } from "./apiProblem"
 import type { ApiConfig, ApiFeedResponse } from "./api.types"
-import type { EpisodeSnapshotIn } from "../../models/Episode"
-
+import type { EpisodeSnapshotIn } from "app/models/Episode"
 /**
  * Configuring the apisauce instance.
  */
@@ -18,6 +17,24 @@ export const DEFAULT_API_CONFIG: ApiConfig = {
   url: Config.API_URL,
   timeout: 10000,
 }
+
+const MAIN_API_MOCK_RESPONSES = {
+  getEpisodes: {
+    kind: "ok",
+    episodes: [
+      {
+        id: "1",
+        title: "Mock Episode 1",
+        description: "This is a mock episode description.",
+      },
+      {
+        id: "2",
+        title: "Mock Episode 2",
+        description: "Another mock episode description.",
+      },
+    ],
+  },
+};
 
 /**
  * Manages all requests to the API. You can use this class to build out
@@ -38,41 +55,70 @@ export class Api {
       headers: {
         Accept: "application/json",
       },
-    })
+    });
+    this.apisauce.axiosInstance.interceptors.request.use((config) => {
+      console.log('RequestURL: ', `${config?.baseURL}${config?.url}`);
+      console.log('RequestHeaders: ', config?.headers);
+      return config;
+    });
+
+  }
+
+  /**
+   * Returns a mock response if mocking is enabled, otherwise proceeds with the actual API call.
+   * @param MOCK_RESPONSES
+   * @param endpointName Name of the endpoint in MOCK_RESPONSES.
+   * @param apiCall The actual API call function to be executed if mocking is disabled.
+   */
+  public async handleRequest<T>(
+    MOCK_RESPONSES: { [x: string]: any },
+    endpointName: keyof typeof MOCK_RESPONSES,
+    apiCall: () => Promise<T>
+  ): Promise<T> {
+    if (Config.SHOULD_MOCK && MOCK_RESPONSES[endpointName]) {
+      console.log(`Mocking response for endpoint: ${endpointName}`);
+      // @ts-ignore
+      return Promise.resolve(MOCK_RESPONSES[endpointName]);
+    }
+
+    return apiCall();
   }
 
   /**
    * Gets a list of recent React Native Radio episodes.
    */
   async getEpisodes(): Promise<{ kind: "ok"; episodes: EpisodeSnapshotIn[] } | GeneralApiProblem> {
-    // make the api call
-    const response: ApiResponse<ApiFeedResponse> = await this.apisauce.get(
-      `api.json?rss_url=https%3A%2F%2Ffeeds.simplecast.com%2FhEI_f9Dx`,
-    )
+    return this.handleRequest(MAIN_API_MOCK_RESPONSES, "getEpisodes", async () => {
 
-    // the typical ways to die when calling an api
-    if (!response.ok) {
-      const problem = getGeneralApiProblem(response)
-      if (problem) return problem
-    }
+      // make the api call
+      const response: ApiResponse<ApiFeedResponse> = await this.apisauce.get(
+        `api.json?rss_url=https%3A%2F%2Ffeeds.simplecast.com%2FhEI_f9Dx`,
+      )
 
-    // transform the data into the format we are expecting
-    try {
-      const rawData = response.data
-
-      // This is where we transform the data into the shape we expect for our MST model.
-      const episodes: EpisodeSnapshotIn[] =
-        rawData?.items.map((raw) => ({
-          ...raw,
-        })) ?? []
-
-      return { kind: "ok", episodes }
-    } catch (e) {
-      if (__DEV__ && e instanceof Error) {
-        console.error(`Bad data: ${e.message}\n${response.data}`, e.stack)
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
       }
-      return { kind: "bad-data" }
-    }
+
+      // transform the data into the format we are expecting
+      try {
+        const rawData = response.data
+
+        // This is where we transform the data into the shape we expect for our MST model.
+        const episodes: EpisodeSnapshotIn[] =
+          rawData?.items.map((raw) => ({
+            ...raw,
+          })) ?? []
+
+        return { kind: "ok", episodes }
+      } catch (e) {
+        if (__DEV__ && e instanceof Error) {
+          console.error(`Bad data: ${e.message}\n${response.data}`, e.stack)
+        }
+        return { kind: "bad-data" }
+      }
+    });
   }
 }
 

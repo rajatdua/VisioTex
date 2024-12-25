@@ -48,7 +48,12 @@ export const ScanScreen: FC<DemoTabScreenProps<"Scan">> =
       if (cameraRef.current) {
         const photo = await cameraRef.current.takePictureAsync();
         if (photo !== undefined) {
-          pushImage(photo.uri);
+          const imageInfo = {
+            uri: photo.uri,
+            width: photo.width,
+            height: photo.height
+          };
+          pushImage(imageInfo.uri, imageInfo.width, imageInfo.height);
           setContinueTakingPicture(false);
         }
       }
@@ -63,7 +68,26 @@ export const ScanScreen: FC<DemoTabScreenProps<"Scan">> =
         quality: 1,
       });
       if (!result.canceled) {
-        pushImage(result.assets[0].uri);
+        const uri = result.assets[0].uri;
+        // Get image dimensions
+        Image.getSize(uri,
+          (width, height) => {
+            const imageInfo = {
+              uri,
+              width,
+              height
+            };
+            pushImage(imageInfo.uri, imageInfo.width, imageInfo.height);
+            // You might want to store these dimensions in your store
+            setContinueTakingPicture(false);
+          },
+          (error) => {
+            console.error("Error getting image size:", error);
+            // Still push the image even if we can't get dimensions
+            pushImage(uri);
+            setContinueTakingPicture(false);
+          }
+        );
         setContinueTakingPicture(false);
       }
     }

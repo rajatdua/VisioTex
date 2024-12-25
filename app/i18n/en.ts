@@ -4,6 +4,8 @@ const en = {
     cancel: "Cancel",
     back: "Back",
     logOut: "Log Out",
+    proceed: "Proceed",
+    loading: "Loading..."
   },
   welcomeScreen: {
     postscript:
@@ -131,7 +133,11 @@ const en = {
     expectation: "You will be given an option to scan the book shelf in front of you. After taking the picture, you would require to crop the image to only focus on the books itself. Lastly, you will get some straight-forward click actions to proceed with the reports.",
     theLatestUpdate: "The latest in VisioTex",
     theLatestUpdateDescription: "The outliers are now visualized in the same image that was fed as an input by you!"
-  }
+  },
+  preStageScreen: {
+    title: "Preview",
+    report: "Report"
+  },
 }
 
 export default en

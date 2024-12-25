@@ -6,5 +6,6 @@
  * https://reactnative.dev/docs/security#storing-sensitive-info
  */
 export default {
-  API_URL: "https://api.rss2json.com/v1/",
+  API_URL: "http://192.168.0.175:8888/api/v1",
+  SHOULD_MOCK: true,
 }

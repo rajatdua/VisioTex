@@ -34,6 +34,15 @@ export interface ApiFeedResponse {
   items: EpisodeItem[]
 }
 
+export interface SpineRegion {
+  bounding_box: number[],
+  confidence: number,
+}
+
+export interface ApiDetectResponse {
+  spine_regions: SpineRegion[],
+}
+
 /**
  * The options used to configure apisauce.
  */
