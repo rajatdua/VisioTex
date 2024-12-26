@@ -21,6 +21,7 @@ import { DemoNavigator, DemoTabParamList } from "./DemoNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { colors } from "app/theme"
 import { PreStageScreen } from "app/screens"
+import { ReportScreen } from "app/screens/ReportScreen"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -40,6 +41,7 @@ export type AppStackParamList = {
   Login: undefined
   Demo: NavigatorScreenParams<DemoTabParamList>
   PreStage: undefined,
+  Report: undefined,
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -75,6 +77,8 @@ const AppStack = observer(function AppStack() {
           <Stack.Screen name="Demo" component={DemoNavigator} />
 
           <Stack.Screen name="PreStage" component={PreStageScreen} />
+
+          <Stack.Screen name="Report" component={ReportScreen} />
         </>
       ) : (
         <>

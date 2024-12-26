@@ -69,13 +69,15 @@ export class Api {
    * @param MOCK_RESPONSES
    * @param endpointName Name of the endpoint in MOCK_RESPONSES.
    * @param apiCall The actual API call function to be executed if mocking is disabled.
+   * @param overrideShouldMock To override mocking over config
    */
   public async handleRequest<T>(
     MOCK_RESPONSES: { [x: string]: any },
     endpointName: keyof typeof MOCK_RESPONSES,
-    apiCall: () => Promise<T>
+    apiCall: () => Promise<T>,
+    overrideShouldMock: boolean = true,
   ): Promise<T> {
-    if (Config.SHOULD_MOCK && MOCK_RESPONSES[endpointName]) {
+    if (Config.SHOULD_MOCK && MOCK_RESPONSES[endpointName] && overrideShouldMock) {
       console.log(`Mocking response for endpoint: ${endpointName}`);
       // @ts-ignore
       return Promise.resolve(MOCK_RESPONSES[endpointName]);

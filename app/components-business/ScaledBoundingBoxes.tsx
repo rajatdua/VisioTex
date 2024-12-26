@@ -79,7 +79,7 @@ export const ScaledBoundingBoxes: React.FC<ScaledBoundingBoxesProps> = observer(
               width={scaledCoords.width}
               height={scaledCoords.height}
               stroke="red"
-              strokeWidth="2"
+              strokeWidth="1"
               fill="none"
             />
           );

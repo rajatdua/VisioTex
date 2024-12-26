@@ -115,6 +115,7 @@ export const iconRegistry = {
   circle: require("../../assets/icons/circle.png"),
   delete: require("../../assets/icons/delete.png"),
   moreImage: require("../../assets/icons/moreImage.png"),
+  expand: require("../../assets/icons/expand.png"),
 }
 
 const $imageStyleBase: ImageStyle = {

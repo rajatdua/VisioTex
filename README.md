@@ -147,6 +147,7 @@ const MyComponent = () => {
 - <a href="https://www.flaticon.com/free-icons/circle" title="circle icons">Circle icons created by Freepik - Flaticon</a>
 - <a href="https://www.flaticon.com/free-icons/picture" title="picture icons">Picture icons created by Pixel perfect - Flaticon</a>
 - <a href="https://www.flaticon.com/free-icons/delete" title="delete icons">Delete icons created by feen - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/fullscreen" title="fullscreen icons">Fullscreen icons created by IYAHICON - Flaticon</a>
 
 ### ./ignite directory
 

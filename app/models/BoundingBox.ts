@@ -5,6 +5,9 @@ export const BoundingBoxModel = types
   .props({
     bounding_box: types.array(types.integer),
     confidence: types.float,
+    vertices: types.maybe(types.array(types.string)),
+    isOutlier: types.maybe(types.boolean),
+    group: types.maybe(types.number),
   })
 export interface BoundingBox extends Instance<typeof BoundingBoxModel> {}
 

@@ -8,6 +8,7 @@ import { AppStackScreenProps } from "app/navigators"
 import { observer } from "mobx-react-lite"
 import { delay } from "app/utils/delay"
 import ScaledBoundingBoxes from "app/components-business/ScaledBoundingBoxes"
+import { FullscreenViewer } from "app/components-business/FullscreenViewer"
 
 interface PreStageScreenProps extends AppStackScreenProps<"PreStage"> {}
 export const PreStageScreen: FC<PreStageScreenProps> =
@@ -16,6 +17,7 @@ export const PreStageScreen: FC<PreStageScreenProps> =
     const { navigation } = _props;
     const { scanStore} = useStores()
     const [showBoundingBoxes, setShowBoundingBoxes] = React.useState(false);
+    const [fullscreenVisible, setFullscreenVisible] = React.useState(false);
 
     function handleBack(){
       navigation.goBack();
@@ -30,7 +32,12 @@ export const PreStageScreen: FC<PreStageScreenProps> =
       setShowBoundingBoxes(true);
     }
 
-    function proceedToReport(){}
+    async function proceedToReport(){
+      setIsLoading(true);
+      await Promise.all([scanStore.fetchGoogleVisionAPI(), delay(550)])
+      setIsLoading(false);
+      navigation.navigate("Report");
+    }
 
     function renderMainView() {
       return (
@@ -65,6 +72,14 @@ export const PreStageScreen: FC<PreStageScreenProps> =
     function renderBoundingBoxesView(){
       return (
         <>
+          <Button
+            preset="default"
+            LeftAccessory={(props) => (
+              <Icon containerStyle={props.style} style={$iconStyle} icon="expand" />
+            )}
+            onPress={() => setFullscreenVisible(true)}
+            tx='common.fullScreen'
+          />
           <View style={$imageCarousel}>
             <ScaledBoundingBoxes
               imageUri={scanStore.lastImage ?? ''}
@@ -72,7 +87,17 @@ export const PreStageScreen: FC<PreStageScreenProps> =
               originalImageWidth={scanStore.lastImageDimensions?.width ?? 0}
               originalImageHeight={scanStore.lastImageDimensions?.height ?? 0}
             />
+            <Text tx='preStageScreen.disclaimer'/>
           </View>
+          {/* Fullscreen Viewer */}
+          <FullscreenViewer
+            visible={fullscreenVisible}
+            onClose={() => setFullscreenVisible(false)}
+            imageUri={scanStore.lastImage ?? ''}
+            boundingBoxes={scanStore.currentSpineRegions}
+            originalImageWidth={scanStore.lastImageDimensions?.width ?? 0}
+            originalImageHeight={scanStore.lastImageDimensions?.height ?? 0}
+          />
           <View style={$bottomBarNavigation}>
             <Button
               preset="default"
@@ -127,4 +152,4 @@ const $imageCarousel: ViewStyle = {
   width: '100%',
   justifyContent: 'center'
 };
-const $iconStyle: ImageStyle = { width: 30, height: 30 }
+const $iconStyle: ImageStyle = { width: 24, height: 24 }

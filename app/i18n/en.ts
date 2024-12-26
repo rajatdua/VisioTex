@@ -5,7 +5,8 @@ const en = {
     back: "Back",
     logOut: "Log Out",
     proceed: "Proceed",
-    loading: "Loading..."
+    loading: "Loading...",
+    fullScreen: "Full Screen"
   },
   welcomeScreen: {
     postscript:
@@ -136,8 +137,13 @@ const en = {
   },
   preStageScreen: {
     title: "Preview",
-    report: "Report"
+    report: "Report",
+    disclaimer: "The bounding boxes can be viewed better scaled in full-screen."
   },
+  reportScreen: {
+    title: "Report",
+    reportDetails: "Details"
+  }
 }
 
 export default en
