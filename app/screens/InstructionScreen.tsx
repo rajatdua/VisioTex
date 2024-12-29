@@ -3,11 +3,11 @@ import { TextStyle, ViewStyle } from "react-native"
 import { ListItem, Screen, Text } from "../components"
 import { DemoTabScreenProps } from "../navigators/DemoNavigator"
 import { spacing } from "../theme"
-import { openLinkInBrowser } from "../utils/openLinkInBrowser"
 import { isRTL } from "../i18n"
 
 export const InstructionScreen: FC<DemoTabScreenProps<"Instruction">> =
   function InstructionScreen(_props) {
+  const { navigation } = _props;
     return (
       <Screen preset="scroll" contentContainerStyle={$container} safeAreaEdges={["top"]}>
         <Text preset="heading" tx="instructionScreen.title" style={$title} />
@@ -19,7 +19,7 @@ export const InstructionScreen: FC<DemoTabScreenProps<"Instruction">> =
           tx="instructionScreen.proceedToScan"
           leftIcon="scan"
           rightIcon={isRTL ? "caretLeft" : "caretRight"}
-          onPress={() => openLinkInBrowser("https://community.infinite.red/")}
+          onPress={() => navigation.navigate('Scan')}
         />
         <Text
           preset="subheading"

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
@@ -7,15 +7,10 @@ import Animated, {
   withSpring,
   runOnJS
 } from 'react-native-reanimated';
-import Svg, { Rect } from 'react-native-svg';
+import Svg, { Rect, Text, G } from 'react-native-svg';
 import { Icon } from "app/components"
 import { colors } from "app/theme"
-
-interface BoundingBox {
-  bounding_box: number[];
-  vertices?: string[];
-  isOutlier?: boolean;
-}
+import { BoundingBox } from "app/models/BoundingBox"
 
 interface FullscreenViewerProps {
   visible: boolean;
@@ -24,6 +19,13 @@ interface FullscreenViewerProps {
   boundingBoxes: BoundingBox[];
   originalImageWidth: number;
   originalImageHeight: number;
+}
+
+interface ScaledCoordinates {
+  x: number,
+  y: number,
+  width: number,
+  height: number,
 }
 
 export const FullscreenViewer: React.FC<FullscreenViewerProps> = ({
@@ -40,6 +42,21 @@ export const FullscreenViewer: React.FC<FullscreenViewerProps> = ({
   const savedScale = useSharedValue(1);
   const savedTranslateX = useSharedValue(0);
   const savedTranslateY = useSharedValue(0);
+
+  const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, title: '' });
+  const handlePress = (box: BoundingBox, scaledCoords: ScaledCoordinates) => {
+    setTooltip({
+      visible: true,
+      x: scaledCoords.x + scaledCoords.width / 2, // Center tooltip horizontally
+      y: scaledCoords.y - 10, // Position above the rectangle
+      title: box?.title ?? '',
+    });
+  };
+
+  const hideTooltip = () => {
+    setTooltip({ visible: false, x: 0, y: 0, title: '' });
+  };
+
 
   // Reset values when modal closes
   useEffect(() => {
@@ -122,6 +139,9 @@ export const FullscreenViewer: React.FC<FullscreenViewerProps> = ({
     doubleTapGesture
   );
 
+  const calculateTextWidth = (text: string, fontSize: number) => text.length * (fontSize * 0.6);
+
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       { scale: scale.value },
@@ -182,6 +202,11 @@ export const FullscreenViewer: React.FC<FullscreenViewerProps> = ({
 
   if (!imageUri) return null;
 
+  const outliers = boundingBoxes.filter(box => !!box.isOutlier);
+  const inliers = boundingBoxes.filter(box => !box.isOutlier);
+  const inlierPercentage = (inliers.length / (inliers.length + outliers.length) * 100);
+  const glyphForInlier = inlierPercentage < 20;
+
   return (
     <Modal visible={visible} animationType="fade" onRequestClose={onClose}>
       <GestureDetector gesture={combinedGesture}>
@@ -199,17 +224,128 @@ export const FullscreenViewer: React.FC<FullscreenViewerProps> = ({
             {boundingBoxes.map((box, index) => {
               const scaledCoords = calculateScaledCoordinates(box);
               if (scaledCoords == null) return;
+              const glyphSize = 10; // Adjust as needed
+              const glyphX = scaledCoords.x + scaledCoords.width / 2; // Center horizontally
+              const glyphY = scaledCoords.y - glyphSize - 2; // Above the rectangle
               return (
-                <Rect
-                  key={index}
-                  x={scaledCoords.x}
-                  y={scaledCoords.y}
-                  width={scaledCoords.width}
-                  height={scaledCoords.height}
-                  stroke={box.isOutlier === undefined ? "red" : box.isOutlier ? "#E66100" : "#5D3A9B"}
-                  strokeWidth="1"
-                  fill="none"
-                />
+                <React.Fragment key={index}>
+                  <Rect
+                    x={scaledCoords.x}
+                    y={scaledCoords.y}
+                    width={scaledCoords.width}
+                    height={scaledCoords.height}
+                    stroke={box.isOutlier === undefined ? "red" : box.isOutlier ? "#E66100" : "#5D3A9B"}
+                    strokeWidth="1"
+                    fill="none"
+                    onPress={() => handlePress(box, scaledCoords)}
+                  />
+                  {!box.isOutlier && glyphForInlier && (
+                    <Text
+                      x={glyphX}
+                      y={glyphY}
+                      fill="yellow"
+                      fontSize={glyphSize}
+                      textAnchor="middle"
+                    >
+                      ★
+                    </Text>
+                  )}
+                  {box.isOutlier && !glyphForInlier && (
+                    <Text
+                      x={glyphX}
+                      y={glyphY}
+                      fill="yellow"
+                      fontSize={glyphSize}
+                      textAnchor="middle"
+                    >
+                      ★
+                    </Text>
+                  )}
+
+                  {tooltip.visible && (
+                    <G>
+                      {/* Calculate text width with max constraint */}
+                      {(() => {
+                        const padding = 10;
+                        const fontSize = 12;
+                        const maxWidth = 300;
+                        const textWidth = Math.min(calculateTextWidth(tooltip.title, fontSize), maxWidth - padding * 2);
+                        const rectWidth = textWidth + padding * 2;
+                        const rectHeight = 26; // Reduced height to remove unnecessary padding
+
+                        // Calculate text lines for wrapping
+                        const words = tooltip.title.split(' ');
+                        let lines = [''];
+                        let currentLine = 0;
+
+                        words.forEach(word => {
+                          const testLine = lines[currentLine] + (lines[currentLine] ? ' ' : '') + word;
+                          const testWidth = calculateTextWidth(testLine, fontSize);
+
+                          if (testWidth > maxWidth - padding * 2) {
+                            currentLine++;
+                            lines[currentLine] = word;
+                          } else {
+                            lines[currentLine] = testLine;
+                          }
+                        });
+
+                        const actualHeight = Math.max(rectHeight, (lines.length * (fontSize + 4)) + padding);
+
+                        return (
+                          <>
+                            {/* Tooltip background */}
+                            <Rect
+                              x={tooltip.x - rectWidth / 2}
+                              y={tooltip.y - actualHeight - 5}
+                              width={rectWidth}
+                              height={actualHeight}
+                              fill="white"
+                              stroke="black"
+                              strokeWidth="1"
+                              rx={5}
+                              ry={5}
+                            />
+
+                            {/* Wrapped tooltip text */}
+                            {lines.map((line, index) => (
+                              <Text
+                                key={index}
+                                x={tooltip.x - rectWidth / 2 + padding}
+                                y={tooltip.y - actualHeight + (index * (fontSize + 4)) + fontSize}
+                                fill="black"
+                                fontSize={fontSize}
+                                textAnchor="start"
+                              >
+                                {line}
+                              </Text>
+                            ))}
+
+                            {/* Close button with simplified press handling */}
+                            <G onPress={hideTooltip}>
+                              <Rect
+                                x={tooltip.x + rectWidth / 2 - padding - 20}
+                                y={tooltip.y - actualHeight + 5}
+                                width={20}
+                                height={20}
+                                fill="transparent"
+                              />
+                              <Text
+                                x={tooltip.x + rectWidth / 2 - padding - 5}
+                                y={tooltip.y - actualHeight + 12}
+                                fill="black"
+                                fontSize={fontSize}
+                                textAnchor="middle"
+                              >
+                                ✕
+                              </Text>
+                            </G>
+                          </>
+                        );
+                      })()}
+                    </G>
+                  )}
+                </React.Fragment>
               );
             })}
           </Svg>
@@ -253,4 +389,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 1000,
   },
+  tooltip: {
+    backgroundColor: 'white',
+    padding: 5,
+    borderRadius: 5,
+    pointerEvents: 'none',
+    width: 40,
+    flexWrap: "wrap"
+  }
 });

@@ -40,11 +40,11 @@ export const ScanStoreModel = types
     get outlierAndInlier() {
       if (!store.numberReport) return { outliers: [], inliers: [] }
       return {
-        outliers: store.numberReport.outliers.map((outlier) => ({ isOutlier: true, bounding_box: outlier.bounding_box })) as BoundingBox[],
+        outliers: store.numberReport.outliers.map((outlier) => ({ isOutlier: true, bounding_box: outlier.bounding_box, title: outlier.current_calculated_title })) as BoundingBox[],
         inliers: Object.values(JSON.parse(JSON.stringify(store.numberReport.inliers)))
           .flatMap((group, index) => {
             const typedGroup = group as unknown as IInlierEntry[];
-            return typedGroup.map((inlier) => ({ isOutlier: false, bounding_box: inlier.bounding_box, group: index }) as BoundingBox);
+            return typedGroup.map((inlier) => ({ isOutlier: false, bounding_box: inlier.bounding_box, group: index, title: inlier.current_calculated_title }) as BoundingBox);
             }
           ),
       }
