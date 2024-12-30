@@ -135,8 +135,14 @@ const en = {
     theLatestUpdate: "The latest in VisioTex",
     theLatestUpdateDescription: "The outliers are now visualized in the same image that was fed as an input by you!"
   },
+  scanScreen: {
+    title: 'Images',
+    subtitle: "You have selected {{imageCount}} so far, the image shown below is the last one you picked."
+  },
   preStageScreen: {
-    title: "Preview",
+    title: "Process",
+    subtitle: "These are your picked images.",
+    scrollRightInstruction: "You can swipe right to scroll through your images.",
     report: "Report",
     disclaimer: "The bounding boxes can be viewed better scaled in full-screen."
   },

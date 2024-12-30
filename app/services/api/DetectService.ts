@@ -4,7 +4,7 @@ import { ApiDetectResponse, ApiGoogleVisionResponse } from "app/services/api/api
 import { BoundingBoxSnapshotIn } from "app/models/BoundingBox"
 import { Api } from "app/services/api/api"
 import * as FileSystem from 'expo-file-system';
-import { randomUUID } from 'expo-crypto';
+// import { randomUUID } from 'expo-crypto';
 import bb from './mock-responses/bb';
 import googleVision from './mock-responses/google-vision';
 import { ExecutionType, GoogleVisionSnapshotIn } from "app/models/GoogleVision"
@@ -21,16 +21,16 @@ const DETECT_API_MOCK_RESPONSES = {
 export class DetectService extends Api {
   async getBoundingBoxes(imageUri: string): Promise<{ kind: "ok"; spine_regions: BoundingBoxSnapshotIn[] } | GeneralApiProblem> {
     return this.handleRequest(DETECT_API_MOCK_RESPONSES, "getBoundingBoxes", async () => {
-      const data = new FormData()
+      // const data = new FormData()
       const fileUri = imageUri.startsWith('file://') ? imageUri : `file://${imageUri}`;
-      // const fileBase64 = await FileSystem.readAsStringAsync(fileUri, {
-      //   encoding: FileSystem.EncodingType.Base64,
-      // });
-      data.append('file', {
-        uri: fileUri,
-        name: `image-${randomUUID()}.jpg`,
-        type: 'image/jpeg',
-      } as any);
+      const fileBase64 = await FileSystem.readAsStringAsync(fileUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      // data.append('file', {
+      //   uri: fileUri,
+      //   name: `image-${randomUUID()}.jpg`,
+      //   type: 'image/jpeg',
+      // } as any);
       const fileExists = await FileSystem.getInfoAsync(fileUri);
       if (!fileExists) {
         if (__DEV__) {
@@ -42,11 +42,11 @@ export class DetectService extends Api {
       // make the api call
       const response: ApiResponse<ApiDetectResponse> = await this.apisauce.post(
         `/detect/bb`,
-        data,
+        { image_base64: fileBase64 },
         {
           headers: {
             Accept: "application/json",
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           }
         }
       )
@@ -78,14 +78,14 @@ export class DetectService extends Api {
   }
   async getGoogleVisionAPI(imageUri: string, executionType: ExecutionType): Promise<{ kind: "ok"; books: GoogleVisionSnapshotIn[], executionType: ExecutionType } | GeneralApiProblem> {
     return this.handleRequest(DETECT_API_MOCK_RESPONSES, "getGoogleVisionAPI", async () => {
-      const data = new FormData()
+      // const data = new FormData()
       const fileUri = imageUri.startsWith('file://') ? imageUri : `file://${imageUri}`;
-      data.append('file', {
-        uri: fileUri,
-        name: `image-${randomUUID()}.jpg`,
-        type: 'image/jpeg',
-      } as any);
-      data.append('execution_type', executionType);
+      // data.append('file', {
+      //   uri: fileUri,
+      //   name: `image-${randomUUID()}.jpg`,
+      //   type: 'image/jpeg',
+      // } as any);
+      // data.append('execution_type', executionType);
       const fileExists = await FileSystem.getInfoAsync(fileUri);
       if (!fileExists) {
         if (__DEV__) {
@@ -94,14 +94,18 @@ export class DetectService extends Api {
         return { kind: "bad-data" }
       }
 
+      const fileBase64 = await FileSystem.readAsStringAsync(fileUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
       // make the api call
       const response: ApiResponse<ApiGoogleVisionResponse> = await this.apisauce.post(
         `/detect/books-v2`,
-        data,
+        { image_base64: fileBase64, execution_type: executionType },
         {
           headers: {
             Accept: "application/json",
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           }
         }
       )

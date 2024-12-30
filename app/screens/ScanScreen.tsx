@@ -7,6 +7,7 @@ import { CameraView, CameraType, useCameraPermissions } from "expo-camera"
 import * as ImagePicker from "expo-image-picker";
 import { useStores } from "app/models"
 import { observer } from "mobx-react-lite"
+import { translate } from "app/i18n"
 
 export const ScanScreen: FC<DemoTabScreenProps<"Scan">> =
   observer(function ScanScreen(_props) {
@@ -126,6 +127,10 @@ export const ScanScreen: FC<DemoTabScreenProps<"Scan">> =
           </CameraView>
         ) : (
           <View style={$imagePreviewContainer}>
+            <Text preset="heading" tx="scanScreen.title" style={$title} />
+            <Text style={$subtitle} text={translate("scanScreen.subtitle", {
+              imageCount: imageCount,
+            })}/>
             <Image source={{ uri: lastImage ?? '' }} style={$imagePreview} />
             <View style={$fixedTopContainer}>
               <TouchableOpacity style={$circularButtonStyle} onPress={deleteImage}>
@@ -154,6 +159,13 @@ const $container: ViewStyle = {
   paddingHorizontal: spacing.lg,
 }
 
+const $title: TextStyle = {
+  marginTop: spacing.lg,
+}
+const $subtitle: TextStyle = {
+  marginTop: spacing.sm,
+}
+
 const $cameraView: ViewStyle = {
   flex: 1,
   justifyContent: "space-between"
@@ -169,6 +181,8 @@ const $imagePreview: ImageStyle = {
   width: "100%",
   height: "100%",
   resizeMode: "contain",
+  flex: 1,
+  justifyContent: "center",
 };
 
 const $commonContainer: ViewStyle = {
@@ -182,6 +196,7 @@ const $commonContainer: ViewStyle = {
 const $fixedTopContainer: ViewStyle = {
   ...$commonContainer,
   top: spacing.sm,
+  justifyContent: 'flex-end'
 };
 
 const $fixedBottomContainer: ViewStyle = {
@@ -203,5 +218,6 @@ const $circularButtonStyle: ViewStyle= {
   backgroundColor: colors.background,
   borderRadius: spacing.xxl,
   padding: spacing.sm,
+  marginTop: spacing.lg,
 }
 

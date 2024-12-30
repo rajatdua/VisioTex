@@ -9,6 +9,7 @@ import { observer } from "mobx-react-lite"
 import { delay } from "app/utils/delay"
 import ScaledBoundingBoxes from "app/components-business/ScaledBoundingBoxes"
 import { FullscreenViewer } from "app/components-business/FullscreenViewer"
+import { Loading } from "app/components-compound/Loading"
 
 interface PreStageScreenProps extends AppStackScreenProps<"PreStage"> {}
 export const PreStageScreen: FC<PreStageScreenProps> =
@@ -47,6 +48,7 @@ export const PreStageScreen: FC<PreStageScreenProps> =
               return <Image key={idx + 1} source={{ uri: imageUri.uri }} style={$imageThumbnail} />;
             })}
           </PagerView>
+          <Text tx="preStageScreen.scrollRightInstruction"/>
           <View style={$bottomBarNavigation}>
             <Button
               preset="default"
@@ -72,14 +74,6 @@ export const PreStageScreen: FC<PreStageScreenProps> =
     function renderBoundingBoxesView(){
       return (
         <>
-          <Button
-            preset="default"
-            LeftAccessory={(props) => (
-              <Icon containerStyle={props.style} style={$iconStyle} icon="expand" />
-            )}
-            onPress={() => setFullscreenVisible(true)}
-            tx='common.fullScreen'
-          />
           <View style={$imageCarousel}>
             <ScaledBoundingBoxes
               imageUri={scanStore.lastImage ?? ''}
@@ -89,6 +83,14 @@ export const PreStageScreen: FC<PreStageScreenProps> =
             />
             <Text tx='preStageScreen.disclaimer'/>
           </View>
+          <Button
+            preset="default"
+            LeftAccessory={(props) => (
+              <Icon containerStyle={props.style} style={$iconStyle} icon="expand" />
+            )}
+            onPress={() => setFullscreenVisible(true)}
+            tx='common.fullScreen'
+          />
           {/* Fullscreen Viewer */}
           <FullscreenViewer
             visible={fullscreenVisible}
@@ -123,7 +125,8 @@ export const PreStageScreen: FC<PreStageScreenProps> =
     return (
       <Screen preset="scroll" contentContainerStyle={$container} safeAreaEdges={["bottom"]}>
         <Text preset="heading" tx="preStageScreen.title" style={$title} />
-        {isLoading ? <Text tx="common.loading" /> : null}
+        <Text tx="preStageScreen.subtitle" style={$subtitle} />
+        {isLoading ? <Loading/> : null}
         {showBoundingBoxes ? renderBoundingBoxesView() : renderMainView()}
       </Screen>
     );
@@ -135,6 +138,10 @@ const $container: ViewStyle = {
   paddingHorizontal: spacing.lg,
 }
 const $title: TextStyle = {
+  marginTop: spacing.lg,
+  marginBottom: spacing.sm,
+}
+const $subtitle: TextStyle = {
   marginBottom: spacing.sm,
 }
 const $bottomBarNavigation: ViewStyle = {

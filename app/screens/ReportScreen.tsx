@@ -9,7 +9,11 @@ import { observer } from "mobx-react-lite"
 import { delay } from "app/utils/delay"
 import { FullscreenViewer } from "app/components-business/FullscreenViewer"
 import { BoundingBox } from "app/models/BoundingBox"
-import { Inlier } from "app/models/Report"
+import { Inlier, NumberReport } from "app/models/Report"
+import { Loading } from "app/components-compound/Loading"
+import CategoryBarChart from "app/components-business/CategoryBarChart"
+import StackedBarChart from "app/components-business/StackedBarChart"
+import GraphHeading from "app/components-compound/GraphHeading"
 
 interface ReportScreenProps extends AppStackScreenProps<"Report"> {}
 
@@ -63,7 +67,7 @@ export const ReportScreen: FC<ReportScreenProps> = observer(function ReportScree
 
     return (
       <View style={$detailsContainer}>
-        <Text style={$sectionTitle}>Book Details</Text>
+        <Text preset="subheading">Book Details</Text>
         {report.inliers && Object.entries(values(report.inliers)).map(([category, books]) => {
           const typedBooks = books as Inlier[];
           return (
@@ -102,7 +106,7 @@ export const ReportScreen: FC<ReportScreenProps> = observer(function ReportScree
 
     return (
       <View style={$imageContainer}>
-        <Text style={$sectionTitle}>Scan Results</Text>
+        <Text preset="subheading">Scan Results</Text>
         <Button
           text="View Details"
           onPress={() => setShowViewer(true)}
@@ -120,11 +124,32 @@ export const ReportScreen: FC<ReportScreenProps> = observer(function ReportScree
     )
   }
 
+  function renderGraphs(){
+    const report = scanStore.numberReport
+    if (!report) return null
+    return (
+      <View style={$graphContainer}>
+        <Text preset="subheading">Graphical Representation</Text>
+        <GraphHeading
+          title="Inlier by Categories"
+          tooltip="This bar chart shows the distribution of inliers across different categories. Each bar represents the count of items correctly identified within each category."
+        />
+        <CategoryBarChart report={scanStore.numberReport as NumberReport} />
+        <GraphHeading
+          title="Misplacement Rate"
+          tooltip="This stacked bar shows the percentage of correctly placed items (green) versus misplaced items (orange). The misplacement rate indicates how many items were found in unexpected locations."
+        />
+        <StackedBarChart misplacementRate={report.misplacement_rate} />
+      </View>
+    );
+  }
+
   function renderReport() {
     return (
       <ScrollView style={$mainContainer}>
         {renderStatistics()}
         {renderImageSection()}
+        {renderGraphs()}
         {renderBookDetails()}
       </ScrollView>
     )
@@ -133,11 +158,7 @@ export const ReportScreen: FC<ReportScreenProps> = observer(function ReportScree
   return (
     <Screen preset="fixed" contentContainerStyle={$container} safeAreaEdges={["bottom"]}>
       <Text preset="heading" tx="reportScreen.title" style={$title} />
-      {isLoading ? (
-        <View style={$loadingContainer}>
-          <Text tx="common.loading" />
-        </View>
-      ) : (
+      {isLoading ? <Loading /> : (
         renderReport()
       )}
       <View style={$bottomBarNavigation}>
@@ -162,14 +183,6 @@ const $container: ViewStyle = {
 
 const $title: TextStyle = {
   marginBottom: spacing.sm,
-}
-
-const $loadingContainer: ViewStyle = {
-  flex: 1,
-  height: "100%",
-  width: "100%",
-  justifyContent: "center",
-  alignItems: "center",
 }
 
 const $mainContainer: ViewStyle = {
@@ -206,12 +219,6 @@ const $detailsContainer: ViewStyle = {
   marginBottom: spacing.lg,
 }
 
-const $sectionTitle: TextStyle = {
-  fontSize: 18,
-  fontWeight: "bold",
-  marginBottom: spacing.md,
-}
-
 const $categoryContainer: ViewStyle = {
   marginBottom: spacing.lg,
 }
@@ -234,6 +241,10 @@ const $bookTitle: TextStyle = {
 }
 
 const $imageContainer: ViewStyle = {
+  marginBottom: spacing.lg,
+}
+
+const $graphContainer: ViewStyle = {
   marginBottom: spacing.lg,
 }
 

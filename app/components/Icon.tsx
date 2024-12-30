@@ -116,6 +116,7 @@ export const iconRegistry = {
   delete: require("../../assets/icons/delete.png"),
   moreImage: require("../../assets/icons/moreImage.png"),
   expand: require("../../assets/icons/expand.png"),
+  info: require("../../assets/icons/info.png"),
 }
 
 const $imageStyleBase: ImageStyle = {

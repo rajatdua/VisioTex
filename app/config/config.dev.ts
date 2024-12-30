@@ -7,5 +7,5 @@
  */
 export default {
   API_URL: "http://192.168.0.49:8888/api/v1",
-  SHOULD_MOCK: true,
+  SHOULD_MOCK: false,
 }
